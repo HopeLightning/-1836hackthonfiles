@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>可行性模拟器 · 社区里的算力与能源网络</title>
+<meta name="description" content="分布式算力+能源节点在什么条件下成立、什么条件下不成立。初焰 · 钠宙 Season 01 · 议题 12 双鱼座。">
+<style>
+:root{
+  --bg:#04161b; --bg2:#072129; --panel:rgba(255,255,255,.035); --panel2:rgba(255,255,255,.06);
+  --line:rgba(120,220,215,.16); --line2:rgba(120,220,215,.3);
+  --txt:#e3f2f1; --dim:#8fb2b5; --dim2:#6b8f93;
+  --teal:#3ee0c6; --gold:#f2c14e; --red:#ff7b6b; --blue:#6cb6ff; --purple:#b3a6ff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1100px 620px at 10% -10%,rgba(20,120,120,.32),transparent 62%),radial-gradient(900px 520px at 92% 0%,rgba(30,90,130,.26),transparent 60%),var(--bg);
+color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:40px 24px 90px}
+
+header{border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:26px}
+.kicker{font-size:11.5px;letter-spacing:.26em;color:var(--teal);text-transform:uppercase;margin-bottom:10px}
+h1{font-size:30px;margin:0 0 8px;font-weight:600;letter-spacing:-.01em}
+h1 .accent{color:var(--teal)}
+.sub{color:var(--dim);font-size:14.5px;margin:0 0 16px}
+.dday{display:inline-flex;align-items:baseline;gap:8px;background:rgba(242,193,78,.1);border:1px solid rgba(242,193,78,.35);border-radius:10px;padding:8px 16px}
+.dday b{font-size:22px;color:var(--gold);font-weight:600}
+.dday span{font-size:13px;color:var(--dim)}
+
+h2{font-size:20px;font-weight:600;margin:34px 0 6px}
+h2:first-child{margin-top:0}
+h3{font-size:16px;font-weight:600;margin:24px 0 8px;color:var(--txt)}
+.lead{color:var(--dim);font-size:14px;border-left:2px solid var(--teal);padding-left:12px;margin:0 0 18px}
+
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.kv .b{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kv .b .k{font-size:11.5px;color:var(--dim2);margin-bottom:4px}
+.kv .b .v{font-size:17px;font-weight:600}
+.kv .b .v.t{color:var(--teal)}.kv .b .v.g{color:var(--gold)}.kv .b .v.r{color:var(--red)}
+.kv .b .n{font-size:11.5px;color:var(--dim);margin-top:2px}
+
+/* simulator */
+.sim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+.row{display:grid;grid-template-columns:200px 1fr 110px;gap:14px;align-items:center;margin:10px 0}
+.row label{font-size:13.5px;color:var(--dim)}
+.row output{font-size:13.5px;color:var(--teal);font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);height:4px}
+input[type=number],textarea,select{background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:7px 10px;font-family:inherit;font-size:13.5px;width:100%}
+textarea{resize:vertical;min-height:70px;line-height:1.6}
+button.act{background:rgba(62,224,198,.12);border:1px solid rgba(62,224,198,.35);color:var(--teal);border-radius:8px;padding:8px 16px;font-size:13.5px;cursor:pointer;font-family:inherit;margin:6px 8px 0 0}
+button.act:hover{background:rgba(62,224,198,.2)}
+button.act.alt{background:rgba(255,255,255,.05);border-color:var(--line);color:var(--dim)}
+button.act.alt:hover{background:rgba(255,255,255,.1);color:var(--txt)}
+
+.verdict{margin-top:18px;padding:18px 20px;border-radius:12px;font-size:15px}
+.verdict.ok{background:rgba(62,224,198,.1);border:1px solid rgba(62,224,198,.35)}
+.verdict.mid{background:rgba(242,193,78,.1);border:1px solid rgba(242,193,78,.35)}
+.verdict.no{background:rgba(255,123,107,.1);border:1px solid rgba(255,123,107,.35)}
+.verdict b{font-weight:600}
+.verdict p{margin:6px 0 0;font-size:13.5px;color:var(--dim)}
+
+.mode{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.mode button{flex:1;min-width:150px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--dim);border-radius:10px;padding:12px;font-size:13.5px;cursor:pointer;font-family:inherit;text-align:left}
+.mode button.on{background:rgba(62,224,198,.12);border-color:rgba(62,224,198,.4);color:var(--teal)}
+.mode button small{display:block;font-size:11.5px;color:var(--dim2);margin-top:3px}
+
+svg.spark{display:block;width:100%;height:auto;margin:10px 0}
+.note{background:rgba(255,255,255,.03);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--dim)}
+.note b{color:var(--gold)}
+
+.src{font-size:11.5px;color:var(--dim2);margin-top:8px;line-height:1.8}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--dim2)}
+
+@media (max-width:640px){
+  .wrap{padding:28px 16px 60px}
+  h1{font-size:22px}
+  .sim{padding:16px 14px}
+  .row{grid-template-columns:1fr;gap:4px}
+  .row output{text-align:left}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">初焰 · 钠宙 Season 01 · 议题 12 双鱼座</div>
+  <h1>社区里的算力与能源网络 <span class="accent">可行性模拟器</span></h1>
+  <p class="sub">核心命题：<b style="color:var(--teal)">这种分布式网络在什么条件下成立、什么条件下不成立。</b></p>
+  <div class="dday"><b>2026.10.17</b><span>路演日 · 2026-10-17</span></div>
+</header>
+
+<!-- ============ 模拟器 ============ -->
+<h2>可行性模拟器</h2>
+<p class="lead">直接回答核心命题：<b>什么条件下成立、什么条件下不成立。</b>左边调参数，右边出结论。路演时把这个当现场演示。</p>
+
+<div class="sim">
+  <div class="mode">
+    <button id="mIso" class="on" onclick="setMode('iso')">孤立运行<small>节点各管各的，需求碎片化</small></button>
+    <button id="mNet" onclick="setMode('net')">联网共享<small>打包交易 + 协同调度，利用率提升</small></button>
+  </div>
+
+  <h3 style="margin-top:6px">储能侧</h3>
+  <div class="row"><label>储能容量 E</label><input type="range" id="e" min="100" max="3000" step="50" value="500"><output id="eo"></output></div>
+  <div class="row"><label>系统单位成本</label><input type="range" id="cc" min="400" max="1600" step="50" value="900"><output id="cco"></output></div>
+  <div class="row"><label>循环寿命</label><input type="range" id="nc" min="3000" max="20000" step="500" value="12000"><output id="nco"></output></div>
+  <div class="row"><label>每日循环次数</label><input type="range" id="cpd" min="0.5" max="2" step="0.1" value="1"><output id="cpdo"></output></div>
+  <div class="row"><label>往返效率 η</label><input type="range" id="eta" min="0.78" max="0.95" step="0.01" value="0.88"><output id="etao"></output></div>
+  <div class="row"><label>放电深度 DoD</label><input type="range" id="dod" min="0.6" max="1" step="0.05" value="0.9"><output id="dodo"></output></div>
+
+  <h3>电价侧</h3>
+  <div class="row"><label>峰电价</label><input type="range" id="pk" min="0.5" max="1.6" step="0.05" value="1.05"><output id="pko"></output></div>
+  <div class="row"><label>谷电价</label><input type="range" id="vl" min="0.1" max="0.7" step="0.05" value="0.35"><output id="vlo"></output></div>
+
+  <h3>算力侧</h3>
+  <div class="row"><label>IT 装机功率</label><input type="range" id="pit" min="50" max="1000" step="50" value="200"><output id="pito"></output></div>
+  <div class="row"><label>平均购电电价</label><input type="range" id="avgp" min="0.3" max="1" step="0.05" value="0.65"><output id="avgpo"></output></div>
+  <div class="row"><label>节点利用率 u</label><input type="range" id="u" min="0.1" max="1" step="0.05" value="0.3"><output id="uo"></output></div>
+  <div class="row"><label>联网后利用率提升</label><input type="range" id="du" min="0" max="0.5" step="0.05" value="0.35"><output id="duo"></output></div>
+  <div class="row"><label>联网额外收益（需求响应等）</label><input type="range" id="ex" min="0" max="0.6" step="0.05" value="0.25"><output id="exo"></output></div>
+
+  <div class="kv" id="out"></div>
+  <div class="verdict" id="vd"></div>
+  <svg class="spark" id="cv" viewBox="0 0 620 150" role="img" aria-label="单位算力能耗随利用率变化曲线"></svg>
+  <div class="src" style="text-align:center">横轴：节点利用率 · 纵轴：单位算力能耗倍数（以满载为 1）</div>
+</div>
+
+<div class="note"><b>模型假设（被追问时要能说出来）：</b>① 只算峰谷套利 + 需求响应，未计需量管理与辅助服务；② 日历寿命上限按 15 年计，取「循环寿命 / 年循环次数」与 15 年的较小值；③ O&M 按初投资的 2%/年；④ PUE 采用简化曲线 PUE(u) = 1.15 + 0.15×(1/u − 1)；⑤ 单位算力能耗倍数 = (0.157 + 0.843u) / u，其中 0.157 取自 H100 空载 110W / TDP 700W。<b>这是量级判断工具，不是投资级测算。</b></div>
+
+<footer>
+  从「议题 12 作战台」抽取的独立版 · 内容与算法为原样搬运（v1.0.0 基线）· 更新记录见 CHANGELOG.md
+</footer>
+
+<script>
+// simulator
+var mode='iso';
+function setMode(m){
+  mode=m;
+  document.getElementById('mIso').classList.toggle('on',m==='iso');
+  document.getElementById('mNet').classList.toggle('on',m==='net');
+  calc();
+}
+function v(id){return parseFloat(document.getElementById(id).value)}
+function syncU(){
+  var u=v('u'),du=v('du');
+  document.getElementById('uo').textContent=(u*100).toFixed(0)+'%';
+  document.getElementById('duo').textContent='+'+(du*100).toFixed(0)+'pt';
+  calc();
+}
+function calc(){
+  var E=v('e'),Ccap=v('cc'),N=v('nc'),cpd=v('cpd'),eta=v('eta'),dod=v('dod');
+  var pk=v('pk'),vl=v('vl'),u0=v('u'),du=v('du'),ex=v('ex');
+  var pit=v('pit'),avgp=v('avgp');
+  var uNet=Math.min(1,u0+du);
+  var u = mode==='iso' ? u0 : uNet;
+
+  document.getElementById('eo').textContent=E+' kWh';
+  document.getElementById('cco').textContent=Ccap+' 元/kWh';
+  document.getElementById('nco').textContent=N+' 次';
+  document.getElementById('cpdo').textContent=cpd.toFixed(1)+' 次/天';
+  document.getElementById('etao').textContent=(eta*100).toFixed(0)+'%';
+  document.getElementById('dodo').textContent=(dod*100).toFixed(0)+'%';
+  document.getElementById('pko').textContent=pk.toFixed(2)+' 元';
+  document.getElementById('vlo').textContent=vl.toFixed(2)+' 元';
+  document.getElementById('exo').textContent='+'+(ex*100).toFixed(0)+'%';
+  document.getElementById('pito').textContent=pit+' kW';
+  document.getElementById('avgpo').textContent=avgp.toFixed(2)+' 元';
+
+  // 储能套利
+  var dis=E*dod, chg=dis/eta;
+  var perCycle=dis*pk - chg*vl;
+  var cycYear=365*cpd;
+  var gross=perCycle*cycYear;
+  var extra = mode==='net' ? gross*ex : 0;
+  var capex=E*Ccap;
+  var lifeYear=Math.min(N/cycYear,15);
+  var amort=capex/lifeYear;
+  var om=capex*0.02;
+
+  // 算力能效
+  var pue=1.15+0.15*(1/u-1);
+  var eMult=(0.157+0.843*u)/u;          // 固定功耗摊薄：以满载为 1
+  var gridMult=(pue*eMult)/1.15;         // 交付同样算力所需市电，以满载为 1
+  var itKwh=pit*8760*(0.157+0.843*u)*pue;
+  var elec=itKwh*avgp;
+  var itKwhFull=pit*8760*1*1.15;
+  var elecFull=itKwhFull*avgp;
+  var waste=elec-elecFull*(0.157+0.843*u); // 相对理想线性电网的额外电费
+
+  var net=gross+extra-amort-om;
+  var payback = (gross+extra-om)>0 ? capex/(gross+extra-om) : Infinity;
+
+  var cls = payback<=8?'t':(payback<=12?'g':'r');
+  document.getElementById('out').innerHTML=
+    '<div class="b"><div class="k">节点利用率</div><div class="v '+(u>=0.6?'t':'r')+'">'+(u*100).toFixed(0)+'%</div><div class="n">'+(mode==='iso'?'孤立运行':'联网共享')+'</div></div>'+
+    '<div class="b"><div class="k">PUE</div><div class="v '+(pue<=1.35?'t':'r')+'">'+pue.toFixed(2)+'</div><div class="n">低负载恶化</div></div>'+
+    '<div class="b"><div class="k">单位算力能耗</div><div class="v '+(eMult<=1.25?'t':'r')+'">'+eMult.toFixed(2)+'×</div><div class="n">固定功耗摊薄</div></div>'+
+    '<div class="b"><div class="k">单位算力电网成本</div><div class="v '+(gridMult<=1.25?'t':'r')+'">'+gridMult.toFixed(2)+'×</div><div class="n">PUE × 摊薄，以满载为 1</div></div>'+
+    '<div class="b"><div class="k">年 IT 市电耗电</div><div class="v">'+(itKwh/10000).toFixed(1)+' 万 kWh</div><div class="n">'+pit+' kW 装机</div></div>'+
+    '<div class="b"><div class="k">年电费</div><div class="v '+(gridMult<=1.25?'t':'r')+'">'+(elec/10000).toFixed(1)+' 万</div><div class="n">含 PUE 与摊薄</div></div>'+
+    '<div class="b"><div class="k">年套利毛利</div><div class="v">'+Math.round(gross/10000)+' 万</div><div class="n">峰谷价差</div></div>'+
+    '<div class="b"><div class="k">回本年限</div><div class="v '+cls+'">'+(isFinite(payback)?payback.toFixed(1)+' 年':'不回本')+'</div><div class="n">初投资 '+Math.round(capex/10000)+' 万</div></div>';
+
+  var vd=document.getElementById('vd'), tip;
+  var uIso=u0, uN=Math.min(1,u0+du);
+  var gM=function(x){var p=1.15+0.15*(1/x-1);return (p*((0.157+0.843*x)/x))/1.15};
+  if(gridMult>1.4){
+    vd.className='verdict no';
+    vd.innerHTML='<b>能效上不成立。</b>在 '+(u*100).toFixed(0)+'% 利用率下，交付同样的算力要消耗 <b>'+gridMult.toFixed(2)+'×</b> 的市电（满载为 1）。'+
+      '<p>孤立节点的陷阱就在这里：固定功耗摊不薄、PUE 在低负载恶化，两头夹击。'+
+      '切到「联网共享」，利用率提到 '+(uN*100).toFixed(0)+'% 时该倍数降到 <b>'+gM(uN).toFixed(2)+'×</b> —— <b>分散不是解药，联网调度才是。</b></p>';
+  }else if(!isFinite(payback)||payback>12){
+    vd.className='verdict no';
+    vd.innerHTML='<b>能效过关，但经济上不成立。</b>回本 '+(isFinite(payback)?payback.toFixed(1)+' 年':'无法回本')+'，超过可接受的 12 年。'+
+      '<p>瓶颈在电价与成本，不在协同：试着扩大峰谷价差、降低系统单位成本或提高循环寿命。</p>';
+  }else if(payback>8||gridMult>1.2){
+    vd.className='verdict mid';
+    vd.innerHTML='<b>临界状态。</b>回本 '+payback.toFixed(1)+' 年，单位算力电网成本 '+gridMult.toFixed(2)+'×。'+
+      '<p>它成立，但不足以说服甲方。关键敏感性：价差每扩大 0.1 元/kWh、系统成本每降 100 元/kWh、利用率每提 10 个百分点，都会明显改变结论。<b>这三个阈值就是「什么条件下成立」的答案。</b></p>';
+  }else{
+    vd.className='verdict ok';
+    vd.innerHTML='<b>成立。</b>回本 '+payback.toFixed(1)+' 年，单位算力电网成本 '+gridMult.toFixed(2)+'×。'+
+      '<p>'+(mode==='net'?'切回「孤立运行」对比一下：利用率掉回 '+(uIso*100).toFixed(0)+'% 时倍数升到 <b>'+gM(uIso).toFixed(2)+'×</b>。如果这个翻转够大，那么<b>联网协同就是决定性变量</b> —— 这正是你路演的结论。':'当前参数下孤立运行也成立，说明这里的瓶颈在电价与成本，不在协同。诚实报告这一点，评审会更信你。')+'</p>';
+  }
+  draw(u);
+}
+function draw(u){
+  var W=620,H=150,pl=44,pr=14,pt=14,pb=28,iw=W-pl-pr,ih=H-pt-pb;
+  var pts=[],i;
+  for(i=0;i<=100;i++){var x=i/100;pts.push([x,(0.157+0.843*x)/x])}
+  var maxY=3.2;
+  function px(x){return pl+x*iw}
+  function py(y){return pt+ih-(y-1)/(maxY-1)*ih}
+  var s='<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="none"/>';
+  s+='<line x1="'+pl+'" y1="'+py(1)+'" x2="'+(W-pr)+'" y2="'+py(1)+'" stroke="rgba(255,255,255,.14)" stroke-width="0.5"/>';
+  var d='';
+  for(i=0;i<pts.length;i++){var p=pts[i];d+=(i?'L':'M')+px(p[0]).toFixed(1)+' '+py(Math.min(p[1],maxY)).toFixed(1)+' '}
+  s+='<path d="'+d+'" fill="none" stroke="#3ee0c6" stroke-width="2"/>';
+  s+='<line x1="'+px(u).toFixed(1)+'" y1="'+pt+'" x2="'+px(u).toFixed(1)+'" y2="'+(pt+ih)+'" stroke="#f2c14e" stroke-width="1" stroke-dasharray="4 3"/>';
+  s+='<circle cx="'+px(u).toFixed(1)+'" cy="'+py(Math.min((0.157+0.843*u)/u,maxY)).toFixed(1)+'" r="4.5" fill="#f2c14e"/>';
+  s+='<text x="'+(px(u)+8).toFixed(1)+'" y="'+(py(Math.min((0.157+0.843*u)/u,maxY))-8).toFixed(1)+'" font-size="12" fill="#f2c14e">'+((0.157+0.843*u)/u).toFixed(2)+'×</text>';
+  s+='<text x="'+pl+'" y="'+(H-8)+'" font-size="11" fill="#6b8f93">0%</text>';
+  s+='<text x="'+(pl+iw/2)+'" y="'+(H-8)+'" font-size="11" fill="#6b8f93" text-anchor="middle">节点利用率</text>';
+  s+='<text x="'+(W-pr)+'" y="'+(H-8)+'" font-size="11" fill="#6b8f93" text-anchor="end">100%</text>';
+  s+='<text x="'+(pl-8)+'" y="'+(py(1)+4)+'" font-size="11" fill="#6b8f93" text-anchor="end">1×</text>';
+  s+='<text x="'+(pl-8)+'" y="'+(py(maxY)+4)+'" font-size="11" fill="#6b8f93" text-anchor="end">3×</text>';
+  document.getElementById('cv').innerHTML=s;
+}
+['e','cc','nc','cpd','eta','dod','pk','vl','pit','avgp','u','du','ex'].forEach(function(id){
+  document.getElementById(id).addEventListener('input',function(){
+    syncU();
+  });
+});
+calc();
+</script>
+</body>
+</html>

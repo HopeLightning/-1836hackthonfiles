@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>议题 12 作战台 · 社区里的算力与能源网络</title>
+<style>
+:root{
+  --bg:#04161b; --bg2:#072129; --panel:rgba(255,255,255,.035); --panel2:rgba(255,255,255,.06);
+  --line:rgba(120,220,215,.16); --line2:rgba(120,220,215,.3);
+  --txt:#e3f2f1; --dim:#8fb2b5; --dim2:#6b8f93;
+  --teal:#3ee0c6; --gold:#f2c14e; --red:#ff7b6b; --blue:#6cb6ff; --purple:#b3a6ff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1100px 620px at 10% -10%,rgba(20,120,120,.32),transparent 62%),radial-gradient(900px 520px at 92% 0%,rgba(30,90,130,.26),transparent 60%),var(--bg);
+color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:40px 24px 90px}
+
+header{border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:26px}
+.kicker{font-size:11.5px;letter-spacing:.26em;color:var(--teal);text-transform:uppercase;margin-bottom:10px}
+h1{font-size:30px;margin:0 0 8px;font-weight:600;letter-spacing:-.01em}
+h1 .accent{color:var(--teal)}
+.sub{color:var(--dim);font-size:14.5px;margin:0 0 16px}
+.dday{display:inline-flex;align-items:baseline;gap:8px;background:rgba(242,193,78,.1);border:1px solid rgba(242,193,78,.35);border-radius:10px;padding:8px 16px}
+.dday b{font-size:22px;color:var(--gold);font-weight:600}
+.dday span{font-size:13px;color:var(--dim)}
+
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:28px;border-bottom:1px solid var(--line);padding-bottom:0}
+nav button{background:none;border:none;border-bottom:2px solid transparent;color:var(--dim2);font-size:14px;padding:10px 14px;cursor:pointer;font-family:inherit;transition:.15s}
+nav button:hover{color:var(--txt)}
+nav button.on{color:var(--teal);border-bottom-color:var(--teal)}
+section{display:none}section.on{display:block}
+
+h2{font-size:20px;font-weight:600;margin:34px 0 6px}
+h2:first-child{margin-top:0}
+h3{font-size:16px;font-weight:600;margin:24px 0 8px;color:var(--txt)}
+.lead{color:var(--dim);font-size:14px;border-left:2px solid var(--teal);padding-left:12px;margin:0 0 18px}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:12px 0}
+.card.acc{border-left:3px solid var(--teal)}
+.card.warn{border-left:3px solid var(--gold)}
+.card.bad{border-left:3px solid var(--red)}
+.card h4{margin:0 0 6px;font-size:15.5px;font-weight:600}
+.card p{margin:6px 0 0;font-size:14px;color:var(--dim)}
+.card b{color:var(--txt);font-weight:600}
+
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11.5px;letter-spacing:.1em;color:var(--dim2);font-weight:500;border-bottom-color:var(--line2)}
+td strong{font-weight:600}
+.hi{color:var(--teal);font-weight:600}
+.hig{color:var(--gold);font-weight:600}
+.hir{color:var(--red);font-weight:600}
+
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.kv .b{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kv .b .k{font-size:11.5px;color:var(--dim2);margin-bottom:4px}
+.kv .b .v{font-size:17px;font-weight:600}
+.kv .b .v.t{color:var(--teal)}.kv .b .v.g{color:var(--gold)}.kv .b .v.r{color:var(--red)}
+.kv .b .n{font-size:11.5px;color:var(--dim);margin-top:2px}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+
+/* simulator */
+.sim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+.row{display:grid;grid-template-columns:200px 1fr 110px;gap:14px;align-items:center;margin:10px 0}
+.row label{font-size:13.5px;color:var(--dim)}
+.row output{font-size:13.5px;color:var(--teal);font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal);height:4px}
+input[type=number],textarea,select{background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:7px 10px;font-family:inherit;font-size:13.5px;width:100%}
+textarea{resize:vertical;min-height:70px;line-height:1.6}
+button.act{background:rgba(62,224,198,.12);border:1px solid rgba(62,224,198,.35);color:var(--teal);border-radius:8px;padding:8px 16px;font-size:13.5px;cursor:pointer;font-family:inherit;margin:6px 8px 0 0}
+button.act:hover{background:rgba(62,224,198,.2)}
+button.act.alt{background:rgba(255,255,255,.05);border-color:var(--line);color:var(--dim)}
+button.act.alt:hover{background:rgba(255,255,255,.1);color:var(--txt)}
+
+.verdict{margin-top:18px;padding:18px 20px;border-radius:12px;font-size:15px}
+.verdict.ok{background:rgba(62,224,198,.1);border:1px solid rgba(62,224,198,.35)}
+.verdict.mid{background:rgba(242,193,78,.1);border:1px solid rgba(242,193,78,.35)}
+.verdict.no{background:rgba(255,123,107,.1);border:1px solid rgba(255,123,107,.35)}
+.verdict b{font-weight:600}
+.verdict p{margin:6px 0 0;font-size:13.5px;color:var(--dim)}
+
+.mode{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.mode button{flex:1;min-width:150px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--dim);border-radius:10px;padding:12px;font-size:13.5px;cursor:pointer;font-family:inherit;text-align:left}
+.mode button.on{background:rgba(62,224,198,.12);border-color:rgba(62,224,198,.4);color:var(--teal)}
+.mode button small{display:block;font-size:11.5px;color:var(--dim2);margin-top:3px}
+
+svg.spark{display:block;width:100%;height:auto;margin:10px 0}
+.note{background:rgba(255,255,255,.03);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--dim)}
+.note b{color:var(--gold)}
+
+.src{font-size:11.5px;color:var(--dim2);margin-top:8px;line-height:1.8}
+.story{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:10px 0;display:grid;grid-template-columns:88px 1fr;gap:16px}
+.story .t{font-size:13px;color:var(--gold);font-weight:600;font-variant-numeric:tabular-nums}
+.story .c h4{margin:0 0 4px;font-size:14.5px;font-weight:600}
+.story .c p{margin:0;font-size:13.5px;color:var(--dim)}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--dim2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">初焰 · 钠宙 Season 01 · 议题 12 双鱼座</div>
+  <h1>社区里的算力与能源网络 <span class="accent">作战台</span></h1>
+  <p class="sub">恶补基础 + 出产出 + 备路演。核心命题：<b style="color:var(--teal)">这种分布式网络在什么条件下成立、什么条件下不成立。</b></p>
+  <div class="dday"><b id="dd">—</b><span>天后路演 · 2026.10.17</span></div>
+</header>
+
+<nav>
+  <button class="on" data-s="k">知识恶补</button>
+  <button data-s="m">三尺度图谱</button>
+  <button data-s="s">可行性模拟器</button>
+  <button data-s="f">前车之鉴</button>
+  <button data-s="b">对标案例</button>
+  <button data-s="p">路演骨架</button>
+  <button data-s="n">关键数字</button>
+</nav>
+
+<!-- ============ 知识恶补 ============ -->
+<section id="k" class="on">
+  <h2>模块 1 · 钠电是什么，跟锂电差在哪</h2>
+  <p class="lead">你不需要会做电池，但路演上任何一个数字被追问都要能说出依据。下面每项都是可以直接念出来的。</p>
+  <table>
+    <thead><tr><th style="width:14%">维度</th><th style="width:22%">钠离子</th><th style="width:22%">磷酸铁锂</th><th>对你的题意味着什么</th></tr></thead>
+    <tbody>
+      <tr><td><strong>能量密度</strong></td><td>100–160 Wh/kg</td><td>160–200+ Wh/kg</td><td>钠电更笨重。<b>它赢不了移动穿戴，但固定式场景不在乎体积</b>——社区节点正好是固定式</td></tr>
+      <tr><td><strong>安全性</strong></td><td class="hi">热失控触发温度显著更高</td><td>热失控风险是行业痛点</td><td class="hi">这是全题的地基：2026-04 中科院物理所胡勇胜团队全球首次实现安时级钠电「无热失控」（可聚合不燃电解质 PNE）。<b>储能能不能进有人活动的空间，取决于这一条</b></td></tr>
+      <tr><td><strong>工作温域</strong></td><td class="hi">−40 ~ 70℃</td><td>一般 −20 ~ 60℃，低温衰减明显</td><td>户外、无空调、北方冬季。−30℃ 可正常充放电是议题 04 的题设条件</td></tr>
+      <tr><td><strong>倍率性能</strong></td><td>6C–10C 高倍率（NFPP）</td><td>一般 0.5C–3C</td><td><b>钠电的价值是吸收尖峰，不是承担均值。</b>这正是 AIDC 场景给它的入场券</td></tr>
+      <tr><td><strong>循环寿命</strong></td><td>15000–20000 次（储能专用电芯）</td><td>6000–12000 次</td><td>每天一循环可用 40 年以上，实际受日历寿命（约 15 年）限制</td></tr>
+      <tr><td><strong>成本</strong></td><td>电芯 0.35–0.47 元/Wh</td><td>约 0.38 元/Wh</td><td>已接近打平。<b>钠电不能再靠「便宜」赢，只能靠场景适配赢</b>——这句话很重要</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>一句话记住：</b>钠电不是更便宜的锂电，是<b>更安全、更耐造、更擅长短时高功率</b>的锂电。谁把它当廉价替代品用，谁就选错了场景。</div>
+
+  <h2>模块 2 · AIDC 到底是什么，为什么需要储能</h2>
+  <p class="lead">AIDC = AI 数据中心。它跟传统 IDC 最大的区别是负荷曲线。</p>
+  <div class="grid2">
+    <div class="card acc">
+      <h4>负荷变得「神经质」</h4>
+      <p>传统 IDC 负荷平滑可预测。AIDC 时代，数千张 GPU 同时启动训练时，<b>毫秒之间数兆瓦功率瞬间爆发</b>。对昂贵 AI 芯片来说，断电不是最可怕的，<b>电压抖一下</b>就可能导致价值数百万的训练任务中断。</p>
+    </div>
+    <div class="card acc">
+      <h4>供电是分层接力的</h4>
+      <p>母线电容（μs–ms 滤波）→ 超级电容（ms–15s 削峰）→ <b>钠电／锂电 BBU/UPS（s–15min 断电备电主力）</b>→ 柴发+储能（min–h 长时保障）。<br><span style="color:var(--gold)">功率脉冲看 kW，备份续航看 kWh。两者不是对手，是分工。</span></p>
+    </div>
+    <div class="card">
+      <h4>一台 100kW AI 机架的两个场景</h4>
+      <p><b>场景 A · 功率毛刺</b>：GPU 任务切换突增 30kW，持续 0.5 秒 = 15 kJ ≈ 4.2 Wh。能量不大但要 0.5 秒内吐出 → <b>电容的主场</b>。<br><b>场景 B · 断电续航</b>：满功率跑 4 分钟 = 6.7 kWh。用超容存这些能量体积成本爆炸 → <b>电池的主场</b>。</p>
+    </div>
+    <div class="card">
+      <h4>产业动向（可直接引用）</h4>
+      <p>NVIDIA GB300 把机架级电容集成进 Power Shelf（每 GPU 65J），Vera Rubin 提升至 400J；台达 Power Capacitance Shelf 提供 15 秒 / 20kW 支撑；800V HVDC 成为主流趋势（英伟达 800V 直流方案）。</p>
+    </div>
+  </div>
+
+  <h2>模块 3 · 算力 ≠ 能耗（你的核心武器）</h2>
+  <p class="lead">这是你区别于其他 23 个人的地方。整段背下来。</p>
+  <table>
+    <thead><tr><th style="width:26%">非线性来源</th><th style="width:34%">实测数字</th><th>怎么用</th></tr></thead>
+    <tbody>
+      <tr><td><strong>① 固定功耗</strong></td><td>H100 SXM 空闲 100–120W / TDP 700W；A100 80GB 空载约 45W / 400W</td><td>算力为零时能耗不为零 → <b>不成正比</b></td></tr>
+      <tr><td><strong>② execution-idle</strong></td><td>程序已加载但没在算，功耗仍维持高位（约 110W）。占在跑时间 <span class="hig">19.7%</span>、能耗 <span class="hig">10.7%</span>；服务类最严重，部分工业 trace 达 <span class="hir">76% 时间 / 65% 能耗</span></td><td>来源：CMU/Princeton 预印本 arXiv 2604.04745（2026-04）。<b>这是「闲置但不省电」的硬证据</b></td></tr>
+      <tr><td><strong>③ 行业平均利用率</strong></td><td>仅 60–70%</td><td>所以上面不是边缘情况，<b>是主流状态</b></td></tr>
+      <tr><td><strong>④ PUE 随负载恶化</strong></td><td>行业均值 PUE 1.56（2024 Uptime）。低负载时更差：冷却、UPS、风机有固定损耗，IT 负载降 50%，它们降不到 50%</td><td>Schneider Electric 白皮书原文：<i>"PUE can worsen even though overall energy use has been reduced."</i></td></tr>
+      <tr><td><strong>⑤ 同算力可差数量级</strong></td><td>Gemini 单次文本请求：全栈 0.24 Wh vs 纯加速器 0.10 Wh（Google 2025-08）；每 token 能耗随 batch size 与上下文长度可差 <span class="hig">6 倍以上</span>（MLPerf Power）</td><td>「多少算力」是个不充分的问题，<b>「什么时候算、怎么算」才决定能耗</b></td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>推论链（路演主轴）：</b>如果算力与能源成正比，这道题就不存在。<b>正因为不成正比 —— 有固定功耗、有时间弹性、有冷却非线性 ——「什么时候算」才成为有价值的决策。调度之所以有意义，前提就是两者之间不是一条直线。</b></div>
+
+  <h2>模块 4 · 收益从哪来：为什么必须能交易</h2>
+  <div class="grid2">
+    <div class="card acc"><h4>峰谷套利</h4><p>谷时低价充电、峰时高价放电。工商业峰谷价差典型 <b>0.4–0.8 元/kWh</b>，部分地区更高。这是最基础的收益。</p></div>
+    <div class="card acc"><h4>需量管理</h4><p>削掉负荷尖峰，降低按最大需量计收的基本电费。<b>对算力+储能节点特别有效</b>，因为 GPU 尖峰正是需量尖峰。</p></div>
+    <div class="card acc"><h4>需求响应</h4><p>响应电网指令削减或增加负荷，获得补偿。需要<b>可被调度、可被聚合</b>才有资格参与。</p></div>
+    <div class="card acc"><h4>辅助服务</h4><p>调频、备用等。要求<b>响应速度快</b>——这正是钠电高倍率的优势区。</p></div>
+  </div>
+  <div class="card warn"><h4>VPP 虚拟电厂：把上面四项串起来的那个东西</h4>
+  <p>单个家庭节点太小，进不了电力市场。<b>VPP 把分散资源聚合成一个整体，代替你去参与市场并把收益分回来。</b>已落地的案例（新加坡 Blue Whale Energy 用钠电 + EMS 做 VPP）用户端是<b>全自动</b>的——用户什么都不用做。</p>
+  <p style="margin-top:8px"><b style="color:var(--gold)">记住这个结论：不能交易的储能，只是一台昂贵的 UPS，回本周期极长。所以「打包交易」不是附加功能，是这个模式能否成立的前提。</b></p></div>
+
+  <h2>模块 5 · 分布式 vs 集中式：你要回答的核心</h2>
+  <table>
+    <thead><tr><th style="width:50%">分布式的优势</th><th>分布式的劣势（你必须主动说出来）</th></tr></thead>
+    <tbody>
+      <tr><td>靠近负荷，<b>减少输电损耗</b></td><td class="hir">规模不经济：小规模机房 PUE 常 1.5+，液冷超大规模可 1.1 出头</td></tr>
+      <tr><td><b>就近消纳绿电</b>，降低对大电网依赖</td><td class="hir">固定功耗摊不薄：利用率越低，单位算力能耗越高</td></tr>
+      <tr><td>余热可利用（社区供暖、热水）</td><td class="hir">运维分散，单点运维成本高于集中式</td></tr>
+      <tr><td>韧性强：单点故障不瘫痪全网</td><td class="hir">孤立节点利用率往往很低（需求是碎片化的）</td></tr>
+    </tbody>
+  </table>
+  <div class="card acc"><h4>你的结论（这就是题眼）</h4>
+  <p><b style="color:var(--teal)">分散本身不是解药，联网调度才是。</b>分散是为了靠近负荷与绿电；但要克服上面四条劣势，必须把分散的节点连起来、把利用率提上去、把固定成本摊薄。<b>而「动态分配、打包交易与协同」正是议题 12 的题面原话——它不是附加项，是逻辑必然。</b></p></div>
+</section>
+
+<!-- ============ 三尺度图谱 ============ -->
+<section id="m">
+  <h2>三尺度系统图谱构建器</h2>
+  <p class="lead">你的产出之一。下面已按水象三题预填了起点，直接在格子里改成你自己的判断。改完点「复制为 Markdown」贴进 1836 平台。</p>
+  <div class="card" style="overflow-x:auto">
+    <table id="matrix" style="min-width:760px">
+      <thead><tr><th style="width:16%">维度</th><th style="width:28%">10 巨蟹座 · 个人设备</th><th style="width:28%">11 天蝎座 · 移动单元</th><th style="width:28%">12 双鱼座 · 社区网络</th></tr></thead>
+      <tbody>
+        <tr><td><strong>功率量级</strong></td><td contenteditable>0.5–3 kW</td><td contenteditable>3–30 kW</td><td contenteditable>100–1000 kW</td></tr>
+        <tr><td><strong>能量量级</strong></td><td contenteditable>2–10 kWh</td><td contenteditable>10–100 kWh</td><td contenteditable>500–5000 kWh</td></tr>
+        <tr><td><strong>空间位置 / 形态</strong></td><td contenteditable>阳台、玄关、车库；家电化外观</td><td contenteditable>车、拖车、户外柜；可运输</td><td contenteditable>社区中心、地下、街角；建筑化</td></tr>
+        <tr><td><strong>所有权主体</strong></td><td contenteditable>住户</td><td contenteditable>运营商或个人</td><td contenteditable>物业 / 业委会 / 第三方运营</td></tr>
+        <tr><td><strong>调度决策者</strong></td><td contenteditable>住户 + 自动 EMS</td><td contenteditable>平台调度</td><td contenteditable>聚合商 / VPP</td></tr>
+        <tr><td><strong>主要收益来源</strong></td><td contenteditable>自发自用、峰谷价差</td><td contenteditable>租赁、应急供电、工地 / 活动</td><td contenteditable>峰谷套利 + 需求响应 + 辅助服务 + 算力出租</td></tr>
+        <tr><td><strong>对人的可见性</strong></td><td contenteditable>高（在同一生活空间内）</td><td contenteditable>中（临时出现）</td><td contenteditable>中（可见但需要被解释）</td></tr>
+        <tr><td><strong>钠电不可替代的理由</strong></td><td contenteditable>本征安全（可入户）、低温性能（北方冬季）</td><td contenteditable>宽温域、耐过放、可运输</td><td contenteditable>本征安全（可近人）、高倍率（削峰）、长循环</td></tr>
+        <tr><td><strong>最可能失败的原因</strong></td><td contenteditable>利用率极低，固定功耗摊不薄</td><td contenteditable>能量密度劣势被放大</td><td contenteditable>小规模 PUE 差 + 需求碎片化 → 利用率上不去</td></tr>
+        <tr><td><strong>什么条件下才成立</strong></td><td contenteditable>与更高层级节点并网共享</td><td contenteditable>有稳定的多场景调度需求</td><td contenteditable>联网协同把利用率提到 X% 以上（用模拟器算）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <button class="act" onclick="copyMatrix()">复制为 Markdown</button>
+  <button class="act alt" onclick="resetMatrix()">恢复预填</button>
+  <div class="note"><b>怎么用这张表：</b>它不是静态图表，是你的<b>研究骨架</b>。每一行都是一个可以被追问的维度；最后一列（社区网络）是你的主战场。路演时把「最可能失败的原因」和「什么条件下才成立」两行重点讲——<b>主动说失败条件，是研究者与爱好者的分界线。</b></div>
+</section>
+
+<!-- ============ 模拟器 ============ -->
+<section id="s">
+  <h2>可行性模拟器</h2>
+  <p class="lead">直接回答你的核心命题：<b>什么条件下成立、什么条件下不成立。</b>左边调参数，右边出结论。路演时把这个当现场演示。</p>
+
+  <div class="sim">
+    <div class="mode">
+      <button id="mIso" class="on" onclick="setMode('iso')">孤立运行<small>节点各管各的，需求碎片化</small></button>
+      <button id="mNet" onclick="setMode('net')">联网共享<small>打包交易 + 协同调度，利用率提升</small></button>
+    </div>
+
+    <h3 style="margin-top:6px">储能侧</h3>
+    <div class="row"><label>储能容量 E</label><input type="range" id="e" min="100" max="3000" step="50" value="500"><output id="eo"></output></div>
+    <div class="row"><label>系统单位成本</label><input type="range" id="cc" min="400" max="1600" step="50" value="900"><output id="cco"></output></div>
+    <div class="row"><label>循环寿命</label><input type="range" id="nc" min="3000" max="20000" step="500" value="12000"><output id="nco"></output></div>
+    <div class="row"><label>每日循环次数</label><input type="range" id="cpd" min="0.5" max="2" step="0.1" value="1"><output id="cpdo"></output></div>
+    <div class="row"><label>往返效率 η</label><input type="range" id="eta" min="0.78" max="0.95" step="0.01" value="0.88"><output id="etao"></output></div>
+    <div class="row"><label>放电深度 DoD</label><input type="range" id="dod" min="0.6" max="1" step="0.05" value="0.9"><output id="dodo"></output></div>
+
+    <h3>电价侧</h3>
+    <div class="row"><label>峰电价</label><input type="range" id="pk" min="0.5" max="1.6" step="0.05" value="1.05"><output id="pko"></output></div>
+    <div class="row"><label>谷电价</label><input type="range" id="vl" min="0.1" max="0.7" step="0.05" value="0.35"><output id="vlo"></output></div>
+
+    <h3>算力侧</h3>
+    <div class="row"><label>IT 装机功率</label><input type="range" id="pit" min="50" max="1000" step="50" value="200"><output id="pito"></output></div>
+    <div class="row"><label>平均购电电价</label><input type="range" id="avgp" min="0.3" max="1" step="0.05" value="0.65"><output id="avgpo"></output></div>
+    <div class="row"><label>节点利用率 u</label><input type="range" id="u" min="0.1" max="1" step="0.05" value="0.3"><output id="uo"></output></div>
+    <div class="row"><label>联网后利用率提升</label><input type="range" id="du" min="0" max="0.5" step="0.05" value="0.35"><output id="duo"></output></div>
+    <div class="row"><label>联网额外收益（需求响应等）</label><input type="range" id="ex" min="0" max="0.6" step="0.05" value="0.25"><output id="exo"></output></div>
+
+    <div class="kv" id="out"></div>
+    <div class="verdict" id="vd"></div>
+    <svg class="spark" id="cv" viewBox="0 0 620 150" role="img" aria-label="单位算力能耗随利用率变化曲线"></svg>
+    <div class="src" style="text-align:center">横轴：节点利用率 · 纵轴：单位算力能耗倍数（以满载为 1）</div>
+  </div>
+
+  <div class="note"><b>模型假设（被追问时要能说出来）：</b>① 只算峰谷套利 + 需求响应，未计需量管理与辅助服务；② 日历寿命上限按 15 年计，取「循环寿命 / 年循环次数」与 15 年的较小值；③ O&M 按初投资的 2%/年；④ PUE 采用简化曲线 PUE(u) = 1.15 + 0.15×(1/u − 1)；⑤ 单位算力能耗倍数 = (0.157 + 0.843u) / u，其中 0.157 取自 H100 空载 110W / TDP 700W。<b>这是量级判断工具，不是投资级测算。</b></div>
+</section>
+
+<!-- ============ 路演骨架 ============ -->
+<section id="p">
+  <h2>5 分钟路演骨架</h2>
+  <p class="lead">按这个顺序讲。评审扫读的路径是「结论 → 问题 → 方法 → 产出 → 边界」，别打乱。</p>
+
+  <div class="story"><div class="t">0:00–0:40</div><div class="c"><h4>一句话结论</h4><p>「分布式算力+能源节点本身不成���，<b>联网调度才是解药</b>。我用一张三尺度图谱和一个社区级原型，验证了它在什么条件下成立、什么条件下不成立。」<br><span style="color:var(--dim2)">——结论先抛，后面全是证据。</span></p></div></div>
+
+  <div class="story"><div class="t">0:40–1:40</div><div class="c"><h4>真实问题：割裂是被迫的，现在窗口开了</h4><p>储能进配电房、算力进机房，与人的生活空间割裂——<b>这个割裂在锂电时代是必须的</b>，热失控风险决定了储能不能进有人活动的空间。钠电的本征安全（安时级无热失控、−40~70℃ 宽温域）第一次让这件事在消防上说得通。<b>所以「重新设计」的窗口是技术给的，不是审美偏好。</b></p></div></div>
+
+  <div class="story"><div class="t">1:40–2:40</div><div class="c"><h4>反例：为什么朴素分散会失败</h4><p>算力与能耗<b>不成正比</b>：GPU 空载仍吃电（execution-idle 可占服务类 65% 能耗），PUE 在低负载时反而恶化。所以孤立运行的社区节点，能效很可能<b>比集中式更差</b>。<br><b style="color:var(--gold)">主动抛反例 —— 这一步决定评审把你归为研究者还是爱好者。</b></p></div></div>
+
+  <div class="story"><div class="t">2:40–3:50</div><div class="c"><h4>产出演示</h4><p>① 三尺度系统图谱（个人 / 移动 / 社区），标出各尺度下钠电真正不可替代的理由；② 社区级原型：把调度、价格、收益机制翻译成居民 / 物业 / 商户三类角色能决策的界面。<br><b>演示时现场拉动模拟器</b>，展示利用率从 30% 提到 65% 时结论如何翻转。</p></div></div>
+
+  <div class="story"><div class="t">3:50–4:30</div><div class="c"><h4>边界：什么条件下成立 / 不成立</h4><p>用模拟器的参数区间说话：价差、循环寿命、利用率三个阈值。明确说出<b>「低于 X 就不成立」</b>。<br>AI for Science 的评审偏好<b>可证伪</b>的表述，「验证可能性」太软，「验证成立条件」才硬。</p></div></div>
+
+  <div class="story"><div class="t">4:30–5:00</div><div class="c"><h4>下一步</h4><p>在 1836 平台留下完整研究证据链；如果拿到 6 个月孵化，我想做的是把原型接到真实的社区负荷与电价数据上跑一遍。</p></div></div>
+
+  <div class="note"><b>五个可能被追问的问题，先准备好：</b><br>
+  ① 「钠电的能量密度比锂电低，凭什么做社区节点？」→ 固定式场景不在乎体积能量密度，在乎安全、温域、倍率、循环。<br>
+  ② 「居民为什么要参与？」→ <b>不预设他们愿意参与</b>。他们多半只想要便宜且不停电；真正的难题是让居民、物业、商户三类角色在<b>不需要理解底层机制</b>的前提下做出决策。<br>
+  ③ 「你的模型和真实项目差多少？」→ 这是量级判断工具，不是投资级测算；假设如上，边界已标明。<br>
+  ④ <b style="color:var(--gold)">「户用光伏搞了十年都没成，你这个凭什么能成？」</b>→ 因为两者不是同一件事。户用光伏卡在「余电上网卖给电网」——过网费定价和交叉补贴是零和博弈，十年没解开。而 688 号文给出的答案是<b>不外送</b>：自发自用电量占总可用发电量不低于 60%。社区节点的价值在新规则下不是发电，是调节。<b>我不在做旧模式的新包装。</b><br>
+  ⑤ <b style="color:var(--gold)">「居民凭什么参与？」</b>→ 这正是我要回答的 —— <b>我不指望居民参与</b>。新加坡 EMA 实测：参与率 46%，但户均能耗只降 5%，结论是"参与需要被智能和自动化系统促成"；中国 688 号文更直接，多用户口径<b>不包括居民和农业用户</b>。所以居民侧按<b>零决策、零 CapEx、全自动</b>设计（参考 Blue Whale Energy）；真正要做成可决策界面的，是<b>主责单位和商户</b>。</div>
+  <div class="note"><b>三条新弹药（详见「前车之鉴」页签）：</b><br>
+  <b>① 硬经济动机</b>：Token 成本中电力占比 &gt;40%；全国算力中心 2025 年用电 1700 亿 kWh，2030 预计破 7000 亿，五年三倍。<br>
+  <b>② 政策窗口刚开</b>：「算电协同」2026 年首次写入政府工作报告；688 号文（2026-05）明确将<b>算力设施</b>列为绿电直连优先支持对象，并首次提出在项目内部形成<b>「微型灵活性市场」</b> —— 都是过去 12 个月内发生的。<br>
+  <b>③ 你不是外行</b>（用反例开场）："我一开始假设分散会更省，查完发现是反的：GPU 空载仍吃电、PUE 低负载时恶化、孤立节点能效可能比集中式更差。所以我改了命题：<b>分散不是解药，联网调度 + 可挪动的负荷才是。</b>"</div>
+</section>
+
+<!-- ============ 前车之鉴 ============ -->
+<section id="f">
+  <h2>前车之鉴：户用光伏 / 隔墙售电为什么十年没跑通</h2>
+  <p class="lead">先说结论：<b style="color:var(--teal)">卡住的不是"分布式"，是「余电上网卖给电网」这一条具体路径。</b>而 2026 年新开的三条通道，都不在这条路上。</p>
+
+  <div class="card acc">
+    <h4>一句话重述你的命题（建议替换现有开场）</h4>
+    <p>过去十年，分布式能源卡在「怎么把电卖出去」。2026 年政策给的答案不是"卖"，是<b>就近消纳 + 内部调节</b>。所以社区节点真正的价值不是发电，是<b>调节</b> —— 而算力恰好是唯一一种可以<b>挪时间、挪地点</b>的大功率负荷。</p>
+  </div>
+
+  <h3>时间线</h3>
+  <table>
+    <thead><tr><th>时间</th><th>事件</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2017</td><td>1901 号文《分布式发电市场化交易试点》</td><td>"隔墙售电"概念诞生</td></tr>
+      <tr><td>2020-12</td><td>江苏常州天宁 5MW、苏州工业园区 12MW 试点</td><td>样本，未复制</td></tr>
+      <tr><td><strong>2025-06</strong></td><td><strong>136 号文</strong>：新能源上网电量全面入市</td><td class="hir">决定性打击：保量保价没了</td></tr>
+      <tr><td>2025-05</td><td>650 号文：绿电直连"一对一"</td><td>开新通道，但只能一对一</td></tr>
+      <tr><td><strong>2026-05</strong></td><td><strong>688 号文</strong>：升级"一对多"，<strong>优先支持算力设施</strong></td><td class="hi">议题 12 的政策窗口</td></tr>
+      <tr><td>2026-09</td><td>河南鹤壁淇县：<strong>储能成为独立售电主体</strong></td><td class="hi">主体身份突破</td></tr>
+    </tbody>
+  </table>
+  <p class="src">组件价格从 2013 年 5 元/W 降到 0.7 元/W —— 十年卡死的<b>不是技术、不是成本</b>，是定价机制、物理约束、主体身份三件事。</p>
+
+  <h3>五道闸门</h3>
+
+  <div class="card bad">
+    <h4>① 过网费定价：责权利失衡 · <span class="hir">未松动</span></h4>
+    <p>电网按<b>最大负荷</b>设计容量并兜底，分布式主体却只按"少用的那一段"付费。试点过网费约 <b>0.015–0.05 元/kWh</b>，常规输配电价 <b>0.2 元/kWh 以上</b>。测算长三角某省每年电网少回收过网费约 <b>17.5 亿元</b>。交叉补贴无处摊销 —— 说不清谁出。<br>河南等地的应对是<b>装防逆流装置</b>（强制自发自用），本质是绕开，不是解决。</p>
+  </div>
+
+  <div class="card warn">
+    <h4>② 物理约束：配网先于交易机制卡死 · <span class="hig">部分松动</span></h4>
+    <p>全国 10–110kV 配电线路超 <b>900 万公里</b>，<b>超三成农村 10kV 馈线仍是单向辐射布局</b>。山东、广东多县域配网承载饱和，部分区域对余电上网类低压光伏<b>暂缓新增接入</b>。症状：反向潮流、电压越限、台区变过载上送；山东 2024 年五一现货市场<b>连续 22 小时负电价</b>。<br><b>典型形态：「交易合同可行、电网无法承载」。</b></p>
+  </div>
+
+  <div class="card bad">
+    <h4>③ 收益单一 + 政策依赖：安全垫正在被抽走 · <span class="hir">正在恶化</span></h4>
+    <p>2026 上半年全国光伏新增并网 7177 万千瓦、<b>同比 −66%</b>（工商业分布式 <b>−77%</b>）；山东 <b>−84%</b>，排名从第 5 跌至第 14。<br>山东机制电价：136 号文前燃煤基准价 <b>0.3949 元</b> → 2025 首轮 <b>0.225</b> → 2026 <b>0.261</b>。江苏午间电价 2025-05 <b>0.78 元</b> → 2026 <b>0.45 元</b>。<br>分布式在机制电价竞价中：项目数接近 25 万个，但<b>规模仅占 9%、电量占比 7%</b>。<br>山东、河南、广西、江西、安徽已将新建工商业分布式剔除出机制电价。</p>
+    <p class="src">山东省太阳能协会张晓斌："分布式光伏正从<b>金融资产</b>转向真正的<b>发电资产</b>。"｜国网能源研究院原副院长蒋莉萍："<b>如果有人能躺着挣钱，必定是有其他主体在负重前行。</b>"</p>
+  </div>
+
+  <div class="card warn">
+    <h4>④ 小微主体入市无路径、结算无仲裁 · <span class="hig">松动中</span></h4>
+    <p>户用光伏缺少标准化入市备案流程；项目备案后落地率低，入围却无法并网会被处罚 → 多省要求"<b>先并网再竞价</b>"，反而把大量项目挡在门外。农村台区双向计量与调压设备覆盖率低、数据孤岛、缺电量纠纷仲裁机制。<br>松动：2024-12 新型经营主体豁免电力业务许可证；688 号文要求各关口装<b>双向分时计量装置、小时级匹配</b>。</p>
+  </div>
+
+  <div class="card bad">
+    <h4>⑤ 居民端参与是伪命题 · <span class="hir">被两个独立信源否定 ★★★</span></h4>
+    <p><b>信源 1｜新加坡 EMA Household DR 试点</b>（2024-09 至 2025-02）：参与率 <b>46%</b>，但<b>户均能耗仅降 5%</b>。EMA 结论："limited potential from households if participation is not better enabled by smart and automated energy management systems."<br><b>信源 2｜中国 688 号文</b>：多用户绿电直连明确"<b>不包括居民和农业用户</b>"。<br><b>信源 3｜全球 VPP</b>：从样板走向主流仍受"用户参与率、收益稳定性、系统协调能力"三因素制约。</p>
+    <p class="src">注意 EMA 的措辞 —— 它没说居民不参与，它说<b>参与率不是瓶颈，"参与得不够自动化"才是瓶颈</b>。46% 的人愿意，但只挪动 5% 的能耗。这是"意愿 ≠ 能力"的绝佳案例，直接支撑你"不预设居民愿意参与"的判断。</p>
+  </div>
+
+  <h3>2026 年新开的三条通道（你的立足点）</h3>
+
+  <div class="card acc">
+    <h4>通道 ① 688 号文（2026-05-20）：多用户绿电直连</h4>
+    <p><span class="hi">★ 优先支持算力设施、绿色氢氨醇等新兴产业</span><br>
+    <span class="hi">★ 分布式光伏可集中汇流参与</span> —— 屋顶资源整合为统一电源，社区节点的技术原型<br>
+    <span class="hi">★ 主责单位机制</span>：须有法人资格的独立主体，统一负责投建运管、市场交易、电费结算；对内承担全部责任，对外与公网划分清晰物理与责任界面。可由园区管委会或第三方组建，<b>但不包含运营输电业务的公共电网企业</b><br>
+    <span class="hi">★ 调节能力激励机制</span>：允许内部主体依据调节能力获取差异化补偿，<b>相当于在项目内部形成"微型灵活性市场"</b> —— 这就是"社区内部分配与交易"的政策原型，已被写进文件<br>
+    <b>量化门槛</b>：以荷定源；年自发自用电量占总可用发电量 ≥ <b>60%</b>；占总用电量 ≥ <b>30%</b>（2030 前 ≥ 35%）<br>
+    <b>进度</b>：截至 2026-06，24 省配套；批复项目超 <b>400 个</b>、装机超 3000 万千瓦，但<b>正式开工较少</b></p>
+    <p class="src">未解摩擦：电源方与负荷方利益诉求不一致；投资怎么分、负荷冲突时优先级怎么定、偏差考核费用谁扛 —— "组团本身的摩擦成本不容忽视"。</p>
+  </div>
+
+  <div class="card acc">
+    <h4>通道 ② 算电协同：2026 年首次写入政府工作报告</h4>
+    <p>2026 政府工作报告："实施超大规模智算集群、<b>算电协同</b>等新基建工程"；"十五五"规划纲要："推动<b>绿色电力与算力协同布局</b>"；八大国家算力枢纽同步开展试点。<br>
+    <b>已落地</b>：宁夏中卫全国首个大规模算电协同绿电直供项目（大唐云基地 50 万千瓦光伏 + 150 万千瓦风电 + 储能，年供绿电 22.9 亿 kWh）；内蒙古乌兰察布首个以数据中心为稳定负荷的绿电直连项目；贵州贵安、青海"算随电动"；<b>上海、杭州智算中心作为柔性负荷参与虚拟电厂调峰响应</b>；闽宁跨省算力任务转移（2026-09）。</p>
+    <div class="note" style="margin:10px 0 0"><b>最值得抄的一条（宁夏实践）：</b>小时级绿电交易试点引导<b>非实时算力任务</b>向午间光伏大发时段转移，"让负荷随绿电而动"。<br>这就是议题 12 的技术内核 —— <b>储能挪的是电，算力挪的是需求。两者叠加才有意义。</b></div>
+  </div>
+
+  <div class="card acc">
+    <h4>通道 ③ 河南鹤壁淇县（2026-09-16）：储能成为独立售电主体</h4>
+    <p>把分布式储能从光伏的"配角"，扶正为台区里能独立签约、独立售电的<b>售电主体</b>。分层设计"优先售电 + 富余入市"。定位为"<b>省级电量市场的增量市场</b>" —— 不和省级市场抢存量蛋糕，因此在现有制度框架内可操作。<br>
+    背景原文："400 伏低压电网接入新能源规模持续快速增长，新能源消纳困难、台区变压器功率上送等问题日益严重。"</p>
+    <p class="src"><b>方法论启发：</b>不要试图在存量市场里抢份额，设计一个"<b>增量市场</b>"切口。这是河南试点能落地的关键，也是议题 12 应该采用的叙事策略。</p>
+  </div>
+
+  <h3>五条设计约束（落到你的产出上）</h3>
+  <table>
+    <thead><tr><th>#</th><th>约束</th><th>来源</th><th>优先级</th><th>怎么做</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1</strong></td><td><strong>价值主张必须是"帮电网省钱"，不是"绕过电网省钱"</strong></td><td>过网费/交叉补贴责权利失衡</td><td class="hir">P0</td><td>系统图谱里把"减少配网扩容投资 / 提供调节服务"画成<b>主价值流</b>，"卖电套利"画成副产品。主次一颠倒，就踩进了十年死路</td></tr>
+      <tr><td><strong>2</strong></td><td><strong>规模上限由台区变压器决定，不由屋顶面积决定</strong></td><td>配网饱和、暂缓接入</td><td class="hir">P0</td><td>模拟器需增加<b>配网承载力</b>约束（反向潮流裕度 / 配变容量）。现在的模型只算能效与回本，缺这一维</td></tr>
+      <tr><td><strong>3</strong></td><td><strong>不能靠单一价差套利，必须多价值叠加</strong></td><td>机制电价退场、午间电价腰斩、广东聚合交易已成本收益倒挂</td><td class="hir">P0</td><td>收益至少画四层：电能量 + 辅助服务 + 容量/需量 + 绿证/碳。688 号文"微型灵活性市场"给了国内口径</td></tr>
+      <tr><td><strong>4</strong></td><td><strong>必须指定一个"主责单位"，明确对内/对外两个责任界面</strong></td><td>688 号文主责单位机制</td><td class="hig">P1</td><td>三角色之外补第四个"运营主体"。它才是对外签约、对内结算的法人。<b>没有它，交易界面无处落地</b></td></tr>
+      <tr><td><strong>5</strong></td><td><strong>居民侧：零决策、零 CapEx、全自动；决策权收敛到主责单位</strong></td><td>EMA 46%/5%；688 号文排除居民</td><td class="hig">P1</td><td>给居民的界面应该是"什么都不用做"的界面。真正要做成可决策界面的，是<b>主责单位和商户</b></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note"><b>口播提醒：</b>不要说"分布式能源十年没做成，所以我要做成它"。要说：<b>分布式能源十年卡在"怎么把电卖出去"，而 2026 年的政策答案不再是卖 —— 688 号文的门槛是自发自用 ≥60%。政策本身已经把方向从"外送"改成了"内消"。</b>社区节点在新规则下的价值不是发电，是调节；而算力是唯一能挪时间、挪地点的大功率负荷。所以这不是旧模式的新包装，是新规则下的新物种。</div>
+</section>
+
+<!-- ============ 对标案例 ============ -->
+<section id="b">
+  <h2>对标案例：新加坡 Blue Whale Energy</h2>
+  <p class="lead">东南亚首个全栈 VPP、新加坡首个电池驱动 VPP。<b style="color:var(--teal)">它验证了四件事，也留了一个明确的空白位。</b></p>
+
+  <h3>公司画像</h3>
+  <div class="kv">
+    <div class="b"><div class="k">成立</div><div class="v t">2024.07</div><div class="n">东南亚 VPP 开发商</div></div>
+    <div class="b"><div class="k">创始人 CEO</div><div class="v t">Gabriel Lim</div><div class="n">此前创办 Saleswhale，被 6sense 收购</div></div>
+    <div class="b"><div class="k">定位</div><div class="v t">全栈 VPP</div><div class="n">软硬一体：自研 EMS + 市场接入</div></div>
+    <div class="b"><div class="k">一句话产品</div><div class="v g">turn every roof into a dispatchable grid asset</div><div class="n">把每片屋顶变成可调度电网资产</div></div>
+  </div>
+  <div class="note"><b>值得注意：</b>Gabriel Lim 是 SaaS/AI 出身，<b>不是电力出身</b>。这与你"科学插画与设计"背景切入能源议题是同构的 —— 你的差异化不该是假装懂电力，而是<b>把复杂的调度/价格/收益机制翻译成可理解的界面</b>。这正是 BWE 软硬一体里"软"的那半边所在的位置。</div>
+
+  <h3>技术与产品</h3>
+  <div class="card acc">
+    <h4>2 kWh 模块化钠离子电池包 · 装在工商业屋顶光伏板正下方</h4>
+    <p>体积约<b>公文包大小</b>、重约 <b>20 kg</b>。关键点：这个位置<b>锂电根本去不了</b> —— 需要热管理、专用外壳、消防间距和 setback 距离，密集城区没有这个空间。<br>
+    <b>为什么必须是钠电</b>：① 本征安全 → 免主动热管理、免去复杂 EPC 与消防配套；② 宽温域 → 屋顶极端温度不需要空调；③ 因此能实现"光伏板正下方"这种近距离共址。<br>
+    <b>电芯供应商 UNIGRID（美国）</b>：宣称 &gt;10C 充电、&gt;450 Wh/L、10000 次循环；获美国 CEC <b>290 万美元</b>资助；合作公告 2025-06-25。</p>
+    <p class="src"><b>成本坦白：</b>钠电目前比锂电<b>贵约 1.5 倍</b>。BWE 的论点是：贵在电芯，省在 EPC、热管理、消防、占地与审批 —— <b>系统级成本而非电芯级成本才是比较口径</b>。这个论证方式可以直接借用到你的 PPT。</p>
+  </div>
+
+  <h3>商业模式（最值得抄的部分）</h3>
+  <table>
+    <thead><tr><th>要素</th><th>做法</th><th>对你的意义</th></tr></thead>
+    <tbody>
+      <tr><td><strong>CapEx</strong></td><td class="hi">零。BWE 承担电池与安装全部成本</td><td>消除决策阻力最有效的手段，比任何界面设计都有效</td></tr>
+      <tr><td><strong>业主获得</strong></td><td>被动收入</td><td>无需决策、无需操作、无需理解市场</td></tr>
+      <tr><td><strong>BWE 收入</strong></td><td>聚合后在批发市场与辅助服务市场变现</td><td>新加坡 95% 电力来自燃气 → 电价高、波动大、调频价值高</td></tr>
+      <tr><td><strong>价值主张</strong></td><td class="hig">CEO 称光伏项目 IRR 翻倍</td><td>未见第三方审计，引用时保留"称"字</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>反直觉的一点：</b>BWE 让业主"什么都不用做"，<b>恰恰是它规模化快的原因</b>。任何要求用户做决策的设计，都会在运维成本和参与衰减上付出代价 —— EMA 的 46%/5% 就是量化证据。</div>
+
+  <h3>监管路径（真正的护城河）</h3>
+  <div class="card acc">
+    <h4>EMA VPP 监管沙盒 · 2025-10 启动 · 2 年期 · 仅三家</h4>
+    <p>参与方：<b>Blue Whale Energy / 南洋理工大学 NTU / SP Group</b>。纳入 EMA「未来电网能力路线图」。<b>2026-03 新加坡政府明确表示继续推进。</b><br>
+    <b>沙盒内关键机制</b>：一个 VPP 可作为<b>「单一发电机」注册进入新加坡批发电力市场</b>，执行三类功能 —— 供电、<b>调节服务</b>（实时调整用电平衡电网）、<b>应急服务</b>（突发供电损失时注入电力）。BWE 另持有 EMA 批发电力牌照。<br>
+    参照系：SP Group 与 EMA 合作初期 VPP 规模 <b>15 MW</b>。新加坡碳税 2026–2027 为 <b>SGD 45/tCO₂e</b>（2030 目标 50–80）。</p>
+    <p class="src">Gabriel Lim（2026，EY Family Office Summit）："EMA granted Blue Whale a VPP regulatory sandbox licence, working closely with EMA to design first-of-a-kind pilots for the national grid. If successful, these become the template for scaling battery-based energy solutions across Southeast Asia."</p>
+  </div>
+  <div class="note"><b>方法论启发：</b>BWE 的第一桶金不是装机量，是<b>一张沙盒牌照</b>。路径是：先拿到规则内的合法身份 → 再和监管共同设计试点 → 成功后成为区域模板。<br>你在议题 12 里对应的动作应该是：<b>先确认"社区算力+能源节点"在现行规则下是什么身份</b>（新型经营主体？增量配电网内负荷？园区主责单位下的内部主体？），而不是先画效果图。<b>身份问题不解决，界面再漂亮也没有交易对手方。</b></div>
+
+  <h3>规模与融资</h3>
+  <div class="kv">
+    <div class="b"><div class="k">种子轮</div><div class="v t">200 万美元</div><div class="n">2025-10，Forge Ventures 领投</div></div>
+    <div class="b"><div class="k">早期 VC</div><div class="v t">2025-09</div><div class="n">UntroD Capital Asia、Yamada Shokai</div></div>
+    <div class="b"><div class="k">已部署</div><div class="v r">0.8 MWh</div><div class="n">公开宣称，非审计</div></div>
+    <div class="b"><div class="k">pipeline</div><div class="v">20+ MWh</div><div class="n">在谈</div></div>
+    <div class="b"><div class="k">年度目标</div><div class="v g">8 MWh</div><div class="n">≈4000 个 2kWh 模块</div></div>
+  </div>
+  <div class="note"><b>请务必把这三个数字放一起看：</b>0.8 MWh 已装、20 MWh 在谈、8 MWh 是年度目标。这是一家拿了 200 万美元种子轮、成立不到两年的公司的真实体量 —— <b>它仍处于极早期</b>。路演上引用它时，说"模式已被验证"是过头的；说"<b>路径已被监管认可、规模尚未验证</b>"才是准确的。</div>
+
+  <h3>风险与未验证之处（被追问时的防守位）</h3>
+  <table>
+    <thead><tr><th>风险</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><strong>规模极小</strong></td><td>0.8 MWh vs 8 MWh 目标，达成情况未见公开更新（截至 2026-10）</td></tr>
+      <tr><td><strong>钠电成本劣势</strong></td><td>比锂电贵 1.5 倍，依赖系统级成本优势兑现；锂电若继续降价，窗口收窄</td></tr>
+      <tr><td><strong>电芯供应商集中</strong></td><td>单一依赖 UNIGRID，其 &gt;10C / 10000 次为厂商宣称值</td></tr>
+      <tr><td><strong>沙盒 ≠ 商业化</strong></td><td>2 年期，2025-10 启动，规则未定型；沙盒结束后的市场规则存在不确定性</td></tr>
+      <tr><td><strong>市场单一</strong></td><td>新加坡 600 万人口、95% 燃气发电；向东南亚复制需重走监管流程</td></tr>
+    </tbody>
+  </table>
+
+  <h3>对标结论：异同与空白位</h3>
+  <div class="grid2">
+    <div class="card acc">
+      <h4>相同点（说明这条路是通的）</h4>
+      <p>钠电底座 · 分布式聚合 VPP · 本征安全叙事 · 用户侧零决策 · 软硬一体</p>
+    </div>
+    <div class="card warn">
+      <h4>差异点（说明空白位在哪）</h4>
+      <p><b>算力维度：BWE 完全没有</b> ★★★<br>场景：BWE 做工商业屋顶，<b>刻意绕开居民端</b>；议题 12 是社区<br>可调度的对象：BWE 只有储能（挪电）；议题 12 是<b>储能 + 算力任务（挪需求）</b> ★★★<br>制度原型：新加坡"VPP 注册为单一发电机" vs 中国"主责单位 + 微型灵活性市场"</p>
+    </div>
+  </div>
+
+  <div class="note"><b>空白位（一句话）：</b>BWE 做的是"把屋顶变成可调度的电网资产"，它不做算力，也不进社区。<br>议题 12 的位置是：<b>把社区里的算力任务和能源资产一起，变成可调度的电网资产 —— 并且让人看得懂这件事是怎么发生的。</b></div>
+
+  <div class="grid2">
+    <div class="card acc">
+      <h4>可迁移的四条（直接抄）</h4>
+      <p><b>1. 零 CapEx</b> —— 用户不出资，是消除决策阻力的最有效手段<br><b>2. 全自动 EMS</b> —— EMA 的结论是"参与需要被自动化促成"，不是被激励促成<br><b>3. 软硬一体</b> —— 只做软件没有资产，只做硬件没有调度价值<br><b>4. 监管先行</b> —— 先解决"我是谁"，再解决"我长什么样"</p>
+    </div>
+    <div class="card bad">
+      <h4>不可迁移的两条</h4>
+      <p><b>1. 不要照搬 C&amp;I 屋顶路线</b> —— 议题 12 的价值恰在社区，绕开居民端就丢掉了命题本身<br><b>2. 不要照搬新加坡市场机制</b> —— 中国没有"VPP 注册为单一发电机"这条路径，对应物是 688 号文的<b>主责单位 + 微型灵活性市场</b></p>
+    </div>
+  </div>
+  <p class="src">来源：PR Newswire（2025-06-25 BWE × UNIGRID）、Tech in Asia（种子轮）、Energy-Storage.News（UNIGRID 参数与 CEC 资助）、Dealroom（2kWh 模块与零 CapEx）、UntroD / e27（部署规模与 EMA 牌照）、EMA 官方媒体稿（VPP 沙盒三家）、EMA Demand-Side Flexibility Roadmap（Household DR 46%/5%）、Chambers and Partners 2026（VPP 单一发电机注册）、中国石化报 2026-04（2026-03 继续推进）。</p>
+</section>
+
+<!-- ============ 关键数字 ============ -->
+<section id="n">
+  <h2>关键数字速查</h2>
+  <p class="lead">路演前过一遍，这些是能被追问的硬数字。</p>
+  <h3>钠电</h3>
+  <div class="kv">
+    <div class="b"><div class="k">安时级无热失控</div><div class="v t">2026.04</div><div class="n">中科院物理所胡勇胜团队，PNE 不燃电解质</div></div>
+    <div class="b"><div class="k">工作温域</div><div class="v t">−40~70℃</div><div class="n">头部厂商储能专用电芯</div></div>
+    <div class="b"><div class="k">循环寿命</div><div class="v t">15000–20000 次</div><div class="n">海辰 ∞Cell N162Ah 等</div></div>
+    <div class="b"><div class="k">电芯成本</div><div class="v g">0.35–0.47 元/Wh</div><div class="n">2026 Q1；LFP 约 0.38，已接近打平</div></div>
+    <div class="b"><div class="k">高倍率</div><div class="v t">6C–10C</div><div class="n">NFPP 体系，用于削峰与功率支撑</div></div>
+  </div>
+  <h3>算力与能耗</h3>
+  <div class="kv">
+    <div class="b"><div class="k">H100 SXM 空载</div><div class="v t">110W / 700W</div><div class="n">约 16% 的固定功耗</div></div>
+    <div class="b"><div class="k">execution-idle</div><div class="v g">19.7% 时间 / 10.7% 能耗</div><div class="n">服务类最严重，部分 trace 76% / 65%</div></div>
+    <div class="b"><div class="k">行业 GPU 利用率</div><div class="v r">60–70%</div><div class="n">低利用率是主流状态，非边缘</div></div>
+    <div class="b"><div class="k">PUE 行业均值</div><div class="v g">1.56</div><div class="n">2024 Uptime；液冷超大规模可 1.1 出头</div></div>
+    <div class="b"><div class="k">Gemini 文本请求</div><div class="v t">0.24 Wh 全栈</div><div class="n">纯加速器仅 0.10 Wh（Google 2025-08）</div></div>
+    <div class="b"><div class="k">每 token 能耗差异</div><div class="v g">6 倍以上</div><div class="n">随 batch size 与上下文长度，MLPerf Power</div></div>
+  </div>
+  <h3>产业与市场</h3>
+  <div class="kv">
+    <div class="b"><div class="k">2030 数据中心电力需求</div><div class="v t">945 TWh</div><div class="n">IEA《能源与人工智能》，较当前翻倍</div></div>
+    <div class="b"><div class="k">2030 AIDC 钠电市场</div><div class="v t">52 GWh</div><div class="n">起点研究院 SPIR 预测</div></div>
+    <div class="b"><div class="k">2026–28 数据中心钠电需求</div><div class="v t">0.2 → 3.8 GWh</div><div class="n">国金证券预测</div></div>
+    <div class="b"><div class="k">宁德 × 海博思创</div><div class="v g">3 年 60 GWh</div><div class="n">全球最大钠电合作，2026-04 官宣</div></div>
+    <div class="b"><div class="k">算电协同</div><div class="v t">2026</div><div class="n">首次写入政府工作报告</div></div>
+  </div>
+  <h3>政策与制度（2026 新增，最容易被追问）</h3>
+  <div class="kv">
+    <div class="b"><div class="k">Token 成本中电力占比</div><div class="v t">&gt;40%</div><div class="n">证券时报；算力与能源耦合的硬经济动机</div></div>
+    <div class="b"><div class="k">全国算力中心用电</div><div class="v t">1700 亿 kWh</div><div class="n">2025；预计 2030 破 7000 亿，五年三倍</div></div>
+    <div class="b"><div class="k">688 号文</div><div class="v g">2026.05.20</div><div class="n">多用户绿电直连一对多；算力设施优先支持</div></div>
+    <div class="b"><div class="k">自发自用门槛</div><div class="v g">≥60%</div><div class="n">占总可用发电量；占总用电量 ≥30%</div></div>
+    <div class="b"><div class="k">绿电直连项目</div><div class="v">400+ 个</div><div class="n">24 省配套；装机超 3000 万千瓦，开工较少</div></div>
+    <div class="b"><div class="k">机制电价 · 山东</div><div class="v r">0.3949→0.261</div><div class="n">元/kWh；136 号文前 vs 2026 竞价</div></div>
+    <div class="b"><div class="k">2026H1 光伏新增</div><div class="v r">−66%</div><div class="n">工商业分布式 −77%；山东 −84%</div></div>
+    <div class="b"><div class="k">EMA 居民 DR</div><div class="v r">46% / 5%</div><div class="n">参与率 vs 户均降幅；意愿≠能力</div></div>
+    <div class="b"><div class="k">宁夏中卫算电协同</div><div class="v t">22.9 亿 kWh</div><div class="n">年供绿电；50万kW光伏+150万kW风电</div></div>
+  </div>
+  <h3>赛事与议题</h3>
+  <div class="kv">
+    <div class="b"><div class="k">路演</div><div class="v g">10.17</div><div class="n">线上</div></div>
+    <div class="b"><div class="k">你的议题</div><div class="v t">12 双鱼座</div><div class="n">备选 10 巨蟹座</div></div>
+    <div class="b"><div class="k">单题上限</div><div class="v t">2 人</div><div class="n">先选先得</div></div>
+    <div class="b"><div class="k">奖金</div><div class="v g">特等 10 万</div><div class="n">可空缺；冠军 1 万 / 亚军 3 千</div></div>
+    <div class="b"><div class="k">赛后</div><div class="v t">6 个月</div><div class="n">冠亚军重点孵化</div></div>
+  </div>
+</section>
+
+<footer>
+  <span>初焰 · 钠宙 Season 01 · 议题 12 作战台 · 生成于 2026-10-11</span>
+  <span>数据以公开来源为准，模型为量级判断工具</span>
+</footer>
+</div>
+
+<script>
+// countdown
+(function(){
+  var d=Math.ceil((new Date('2026-10-17T00:00:00')-new Date())/86400000);
+  document.getElementById('dd').textContent=d>0?d:0;
+})();
+
+// tabs
+document.querySelectorAll('nav button').forEach(function(b){
+  b.onclick=function(){
+    document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('on')});
+    document.querySelectorAll('section').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on');
+    document.getElementById(b.dataset.s).classList.add('on');
+    if(b.dataset.s==='s') calc();
+  };
+});
+
+// matrix
+var MATRIX_DEFAULT=null;
+(function(){
+  var t=document.getElementById('matrix');
+  MATRIX_DEFAULT=Array.prototype.map.call(t.querySelectorAll('td[contenteditable]'),function(c){return c.innerHTML});
+})();
+function copyMatrix(){
+  var t=document.getElementById('matrix'),out=[];
+  var head=Array.prototype.map.call(t.querySelectorAll('thead th'),function(h){return h.textContent.trim()});
+  out.push('| '+head.join(' | ')+' |');
+  out.push('|'+head.map(function(){return '---'}).join('|')+'|');
+  Array.prototype.forEach.call(t.querySelectorAll('tbody tr'),function(tr){
+    var cells=Array.prototype.map.call(tr.children,function(td){return td.textContent.trim().replace(/\|/g,'/')});
+    out.push('| '+cells.join(' | ')+' |');
+  });
+  var md=out.join('\n');
+  navigator.clipboard.writeText(md).then(function(){alert('已复制为 Markdown，可直接贴进 1836 平台')},function(){prompt('复制下面内容：',md)});
+}
+function resetMatrix(){
+  if(!confirm('恢复为预填内容？你的修改会丢失。'))return;
+  var t=document.getElementById('matrix').querySelectorAll('td[contenteditable]');
+  Array.prototype.forEach.call(t,function(c,i){c.innerHTML=MATRIX_DEFAULT[i]});
+}
+
+// simulator
+var mode='iso';
+function setMode(m){
+  mode=m;
+  document.getElementById('mIso').classList.toggle('on',m==='iso');
+  document.getElementById('mNet').classList.toggle('on',m==='net');
+  calc();
+}
+function v(id){return parseFloat(document.getElementById(id).value)}
+function syncU(){
+  var u=v('u'),du=v('du');
+  document.getElementById('uo').textContent=(u*100).toFixed(0)+'%';
+  document.getElementById('duo').textContent='+'+(du*100).toFixed(0)+'pt';
+  calc();
+}
+function calc(){
+  var E=v('e'),Ccap=v('cc'),N=v('nc'),cpd=v('cpd'),eta=v('eta'),dod=v('dod');
+  var pk=v('pk'),vl=v('vl'),u0=v('u'),du=v('du'),ex=v('ex');
+  var pit=v('pit'),avgp=v('avgp');
+  var uNet=Math.min(1,u0+du);
+  var u = mode==='iso' ? u0 : uNet;
+
+  document.getElementById('eo').textContent=E+' kWh';
+  document.getElementById('cco').textContent=Ccap+' 元/kWh';
+  document.getElementById('nco').textContent=N+' 次';
+  document.getElementById('cpdo').textContent=cpd.toFixed(1)+' 次/天';
+  document.getElementById('etao').textContent=(eta*100).toFixed(0)+'%';
+  document.getElementById('dodo').textContent=(dod*100).toFixed(0)+'%';
+  document.getElementById('pko').textContent=pk.toFixed(2)+' 元';
+  document.getElementById('vlo').textContent=vl.toFixed(2)+' 元';
+  document.getElementById('exo').textContent='+'+(ex*100).toFixed(0)+'%';
+  document.getElementById('pito').textContent=pit+' kW';
+  document.getElementById('avgpo').textContent=avgp.toFixed(2)+' 元';
+
+  // 储能套利
+  var dis=E*dod, chg=dis/eta;
+  var perCycle=dis*pk - chg*vl;
+  var cycYear=365*cpd;
+  var gross=perCycle*cycYear;
+  var extra = mode==='net' ? gross*ex : 0;
+  var capex=E*Ccap;
+  var lifeYear=Math.min(N/cycYear,15);
+  var amort=capex/lifeYear;
+  var om=capex*0.02;
+
+  // 算力能效
+  var pue=1.15+0.15*(1/u-1);
+  var eMult=(0.157+0.843*u)/u;          // 固定功耗摊薄：以满载为 1
+  var gridMult=(pue*eMult)/1.15;         // 交付同样算力所需市电，以满载为 1
+  var itKwh=pit*8760*(0.157+0.843*u)*pue;
+  var elec=itKwh*avgp;
+  var itKwhFull=pit*8760*1*1.15;
+  var elecFull=itKwhFull*avgp;
+  var waste=elec-elecFull*(0.157+0.843*u); // 相对理想线性电网的额外电费
+
+  var net=gross+extra-amort-om;
+  var payback = (gross+extra-om)>0 ? capex/(gross+extra-om) : Infinity;
+
+  var cls = payback<=8?'t':(payback<=12?'g':'r');
+  document.getElementById('out').innerHTML=
+    '<div class="b"><div class="k">节点利用率</div><div class="v '+(u>=0.6?'t':'r')+'">'+(u*100).toFixed(0)+'%</div><div class="n">'+(mode==='iso'?'孤立运行':'联网共享')+'</div></div>'+
+    '<div class="b"><div class="k">PUE</div><div class="v '+(pue<=1.35?'t':'r')+'">'+pue.toFixed(2)+'</div><div class="n">低负载恶化</div></div>'+
+    '<div class="b"><div class="k">单位算力能耗</div><div class="v '+(eMult<=1.25?'t':'r')+'">'+eMult.toFixed(2)+'×</div><div class="n">固定功耗摊薄</div></div>'+
+    '<div class="b"><div class="k">单位算力电网成本</div><div class="v '+(gridMult<=1.25?'t':'r')+'">'+gridMult.toFixed(2)+'×</div><div class="n">PUE × 摊薄，以满载为 1</div></div>'+
+    '<div class="b"><div class="k">年 IT 市电耗电</div><div class="v">'+(itKwh/10000).toFixed(1)+' 万 kWh</div><div class="n">'+pit+' kW 装机</div></div>'+
+    '<div class="b"><div class="k">年电费</div><div class="v '+(gridMult<=1.25?'t':'r')+'">'+(elec/10000).toFixed(1)+' 万</div><div class="n">含 PUE 与摊薄</div></div>'+
+    '<div class="b"><div class="k">年套利毛利</div><div class="v">'+Math.round(gross/10000)+' 万</div><div class="n">峰谷价差</div></div>'+
+    '<div class="b"><div class="k">回本年限</div><div class="v '+cls+'">'+(isFinite(payback)?payback.toFixed(1)+' 年':'不回本')+'</div><div class="n">初投资 '+Math.round(capex/10000)+' 万</div></div>';
+
+  var vd=document.getElementById('vd'), tip;
+  var uIso=u0, uN=Math.min(1,u0+du);
+  var gM=function(x){var p=1.15+0.15*(1/x-1);return (p*((0.157+0.843*x)/x))/1.15};
+  if(gridMult>1.4){
+    vd.className='verdict no';
+    vd.innerHTML='<b>能效上不成立。</b>在 '+(u*100).toFixed(0)+'% 利用率下，交付同样的算力要消耗 <b>'+gridMult.toFixed(2)+'×</b> 的市电（满载为 1）。'+
+      '<p>孤立节点的陷阱就在这里：固定功耗摊不薄、PUE 在低负载恶化，两头夹击。'+
+      '切到「联网共享」，利用率提到 '+(uN*100).toFixed(0)+'% 时该倍数降到 <b>'+gM(uN).toFixed(2)+'×</b> —— <b>分散不是解药，联网调度才是。</b></p>';
+  }else if(!isFinite(payback)||payback>12){
+    vd.className='verdict no';
+    vd.innerHTML='<b>能效过关，但经济上不成立。</b>回本 '+(isFinite(payback)?payback.toFixed(1)+' 年':'无法回本')+'，超过可接受的 12 年。'+
+      '<p>瓶颈在电价与成本，不在协同：试着扩大峰谷价差、降低系统单位成本或提高循环寿命。</p>';
+  }else if(payback>8||gridMult>1.2){
+    vd.className='verdict mid';
+    vd.innerHTML='<b>临界状态。</b>回本 '+payback.toFixed(1)+' 年，单位算力电网成本 '+gridMult.toFixed(2)+'×。'+
+      '<p>它成立，但不足以说服甲方。关键敏感性：价差每扩大 0.1 元/kWh、系统成本每降 100 元/kWh、利用率每提 10 个百分点，都会明显改变结论。<b>这三个阈值就是「什么条件下成立」的答案。</b></p>';
+  }else{
+    vd.className='verdict ok';
+    vd.innerHTML='<b>成立。</b>回本 '+payback.toFixed(1)+' 年，单位算力电网成本 '+gridMult.toFixed(2)+'×。'+
+      '<p>'+(mode==='net'?'切回「孤立运行」对比一下：利用率掉回 '+(uIso*100).toFixed(0)+'% 时倍数升到 <b>'+gM(uIso).toFixed(2)+'×</b>。如果这个翻转够大，那么<b>联网协同就是决定性变量</b> —— 这正是你路演的结论。':'当前参数下孤立运行也成立，说明这里的瓶颈在电价与成本，不在协同。诚实报告这一点，评审会更信你。')+'</p>';
+  }
+  draw(u);
+}
+function draw(u){
+  var W=620,H=150,pl=44,pr=14,pt=14,pb=28,iw=W-pl-pr,ih=H-pt-pb;
+  var pts=[],i;
+  for(i=0;i<=100;i++){var x=i/100;pts.push([x,(0.157+0.843*x)/x])}
+  var maxY=3.2;
+  function px(x){return pl+x*iw}
+  function py(y){return pt+ih-(y-1)/(maxY-1)*ih}
+  var s='<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="none"/>';
+  s+='<line x1="'+pl+'" y1="'+py(1)+'" x2="'+(W-pr)+'" y2="'+py(1)+'" stroke="rgba(255,255,255,.14)" stroke-width="0.5"/>';
+  var d='';
+  for(i=0;i<pts.length;i++){var p=pts[i];d+=(i?'L':'M')+px(p[0]).toFixed(1)+' '+py(Math.min(p[1],maxY)).toFixed(1)+' '}
+  s+='<path d="'+d+'" fill="none" stroke="#3ee0c6" stroke-width="2"/>';
+  s+='<line x1="'+px(u).toFixed(1)+'" y1="'+pt+'" x2="'+px(u).toFixed(1)+'" y2="'+(pt+ih)+'" stroke="#f2c14e" stroke-width="1" stroke-dasharray="4 3"/>';
+  s+='<circle cx="'+px(u).toFixed(1)+'" cy="'+py(Math.min((0.157+0.843*u)/u,maxY)).toFixed(1)+'" r="4.5" fill="#f2c14e"/>';
+  s+='<text x="'+(px(u)+8).toFixed(1)+'" y="'+(py(Math.min((0.157+0.843*u)/u,maxY))-8).toFixed(1)+'" font-size="12" fill="#f2c14e">'+((0.157+0.843*u)/u).toFixed(2)+'×</text>';
+  s+='<text x="'+pl+'" y="'+(H-8)+'" font-size="11" fill="#6b8f93">0%</text>';
+  s+='<text x="'+(pl+iw/2)+'" y="'+(H-8)+'" font-size="11" fill="#6b8f93" text-anchor="middle">节点利用率</text>';
+  s+='<text x="'+(W-pr)+'" y="'+(H-8)+'" font-size="11" fill="#6b8f93" text-anchor="end">100%</text>';
+  s+='<text x="'+(pl-8)+'" y="'+(py(1)+4)+'" font-size="11" fill="#6b8f93" text-anchor="end">1×</text>';
+  s+='<text x="'+(pl-8)+'" y="'+(py(maxY)+4)+'" font-size="11" fill="#6b8f93" text-anchor="end">3×</text>';
+  document.getElementById('cv').innerHTML=s;
+}
+['e','cc','nc','cpd','eta','dod','pk','vl','pit','avgp','u','du','ex'].forEach(function(id){
+  document.getElementById(id).addEventListener('input',function(){
+    syncU();
+  });
+});
+calc();
+</script>
+</body>
+</html>
